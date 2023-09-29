@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  db: # Database
+    build:
+      context: ./backend/db
+    environment: # Variable d'environnement pour se connecter à la db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydatabase
+    volumes:
+      - /volume
+    ports:
+      - "3306:3306"
+    container_name : customlink-db
+    networks:
+      - app-network
+
+
+  frontend: # Application front
+    build:
+      context: ./
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+
+  backend: # Serveur backend
+    build:
+      context: ./backend
+    ports:
+      - "3050:3050"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
